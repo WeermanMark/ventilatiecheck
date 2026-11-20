@@ -1,72 +1,702 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#176b57">
-<title>Ventilation Advisor</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#153e35">
+<title>Air Reset</title>
+
 <style>
-:root{color-scheme:light;--green:#176b57;--bg:#f3f6f5;--ink:#172522;--muted:#61716c}
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink}
-main{max-width:620px;margin:0 auto;padding:24px 16px 40px}header{margin-bottom:20px}h1{font-size:27px;margin:0 0 6px;letter-spacing:-.5px}.sub{color:var(--muted);font-size:14px;line-height:1.45}
-.card{background:white;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 2px 12px #152b2410}h2{font-size:17px;margin:0 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-label{display:block;color:var(--muted);font-size:13px;margin:0 0 6px}input{width:100%;font:inherit;font-size:18px;padding:12px;border:1px solid #cbd6d1;border-radius:10px;background:white;color:var(--ink)}input:focus{outline:2px solid #8bc7b4;border-color:var(--green)}.unit{color:var(--muted);font-size:12px;margin-top:5px}
-.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#f4f7f6;border-radius:12px;padding:12px}.metric .name{color:var(--muted);font-size:12px}.metric .value{font-size:25px;font-weight:700;margin-top:4px}
-.decision{border-radius:14px;padding:16px;margin-top:14px;background:#edf6f1}.decision.good{background:#e8f5ed}.decision.bad{background:#fff0ed}.decision.neutral{background:#f1f3f2}.decision strong{display:block;font-size:18px;margin-bottom:5px}.decision p{margin:0;font-size:14px;line-height:1.45}
-.note{font-size:12px;color:var(--muted);line-height:1.5}button{border:0;border-radius:10px;padding:11px 14px;background:#e7efec;color:var(--green);font:inherit;font-weight:600;cursor:pointer}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid #e5ebe8}th{color:var(--muted);font-size:12px;font-weight:600}td strong{font-size:16px}footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}@media(max-width:360px){.grid{gap:8px}input{padding:10px 8px}th,td{padding:8px 5px}}
+:root {
+  --ink: #18332d;
+  --muted: #6a8078;
+  --bg: #f2f6f3;
+  --green: #17634f;
+  --light: #e4f1e9;
+  --border: #dce7e1;
+  --blue: #eaf2fa;
+  --orange: #fff1e4;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 480px;
+  margin: auto;
+  padding: calc(env(safe-area-inset-top) + 14px)
+           15px
+           calc(env(safe-area-inset-bottom) + 24px);
+}
+
+.hero {
+  background: linear-gradient(145deg, #153e35, #26765b);
+  color: white;
+  border-radius: 26px;
+  padding: 24px 21px 22px;
+  box-shadow: 0 12px 30px #153e3525;
+}
+
+.kicker {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  opacity: .75;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 29px;
+  letter-spacing: -.7px;
+  margin: 7px 0 8px;
+}
+
+.hero p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  opacity: .9;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e8efeb;
+  border-radius: 20px;
+  padding: 18px;
+  margin-top: 14px;
+  box-shadow: 0 4px 14px #1d45350a;
+}
+
+h2 {
+  font-size: 17px;
+  margin: 0 0 14px;
+  letter-spacing: -.2px;
+}
+
+label {
+  font-size: 13px;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+input[type=number] {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fbfdfc;
+  color: var(--ink);
+  font-size: 18px;
+  padding: 13px 12px;
+  min-height: 48px;
+  appearance: none;
+}
+
+input:focus {
+  outline: 2px solid #9bc9b6;
+  border-color: var(--green);
+}
+
+.achbox {
+  margin-top: 15px;
+  background: #f5f9f6;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.achhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.achval {
+  font-size: 23px;
+  color: var(--green);
+  font-weight: 800;
+}
+
+input[type=range] {
+  width: 100%;
+  height: 32px;
+  accent-color: var(--green);
+  margin: 8px 0 0;
+}
+
+.rangeends {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+button {
+  border: 0;
+  border-radius: 12px;
+  background: var(--light);
+  color: var(--green);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 12px;
+  min-height: 44px;
+}
+
+button:active {
+  transform: scale(.98);
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tile {
+  padding: 14px;
+  border-radius: 16px;
+  background: #f5f8f6;
+}
+
+.tile.blue { background: var(--blue); }
+
+.tile .label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tile .big {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+  margin-top: 5px;
+}
+
+.tile .unit {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.status {
+  padding: 15px;
+  border-radius: 15px;
+  background: var(--light);
+  margin-top: 12px;
+}
+
+.status.warn { background: var(--orange); }
+
+.status strong {
+  font-size: 15px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.status p {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.forecast {
+  display: grid;
+  gap: 10px;
+}
+
+.forecastrow {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 65px 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.time {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--green);
+}
+
+.forecastrow .caption {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.forecastrow .val {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 3px;
+}
+
+.forecastrow .val small {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.recommend {
+  background: #153e35;
+  color: white;
+  padding: 16px;
+  border-radius: 16px;
+  margin-top: 12px;
+}
+
+.recommend .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: .75;
+}
+
+.recommend .main {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 5px;
+}
+
+.recommend p {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 7px 0 0;
+  opacity: .9;
+}
+
+details summary {
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+details summary::-webkit-details-marker { display: none; }
+
+details summary:after {
+  content: "＋";
+  float: right;
+  color: var(--green);
+}
+
+details[open] summary:after { content: "−"; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+td, th {
+  text-align: left;
+  padding: 9px 5px;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.foot {
+  text-align: center;
+  padding: 18px 6px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media(max-width:360px) {
+  main { padding-left: 12px; padding-right: 12px; }
+  .card { padding: 15px; }
+  .forecastrow { grid-template-columns: 58px 1fr 1fr; }
+  .forecastrow .val { font-size: 18px; }
+}
 </style>
 </head>
+
 <body>
 <main>
-<header><h1>Ventilation Advisor</h1><div class="sub">Compare moisture levels and estimate how indoor conditions change while ventilating.</div></header>
-<section class="card"><h2>Air measurements</h2><div class="grid">
-<div><label for="ti">Indoor temperature</label><input id="ti" type="number" inputmode="decimal" step="0.1" value="18.8"><div class="unit">°C</div></div>
-<div><label for="rhi">Indoor relative humidity</label><input id="rhi" type="number" inputmode="decimal" min="0" max="100" step="1" value="70"><div class="unit">%</div></div>
-<div><label for="to">Outdoor temperature</label><input id="to" type="number" inputmode="decimal" step="0.1" value="11"><div class="unit">°C</div></div>
-<div><label for="rho">Outdoor relative humidity</label><input id="rho" type="number" inputmode="decimal" min="0" max="100" step="1" value="80"><div class="unit">%</div></div>
-<div style="grid-column:1/-1"><label for="ach">Estimated air changes (ACH)</label>
-<input id="ach" type="range" min="0.1" max="3" step="0.05" value="0.67" style="padding:0;accent-color:var(--green)">
-<div class="unit"><span id="achValue">0.67</span> air changes per hour — drag to adjust</div></div>
-</div><div class="actions"><button type="button" id="clear">Reset values</button></div></section>
-<section class="card"><h2>Typical ACH examples</h2>
-<table><thead><tr><th>Situation</th><th>Approx. ACH</th></tr></thead><tbody>
-<tr><td>Very low ventilation / weak air movement</td><td>0.2–0.4</td></tr>
-<tr><td>Gentle cross-ventilation</td><td>0.4–0.8</td></tr>
-<tr><td>Moderate cross-ventilation</td><td>0.8–1.5</td></tr>
-<tr><td>Strong breeze / wide openings</td><td>1.5–3+ </td></tr>
-<tr><td>Your previous moisture-based estimate</td><td>~0.67</td></tr>
-</tbody></table>
-<p class="note">These are illustrative ranges, not guaranteed rates. Actual ACH depends strongly on wind, opening size, layout, obstructions and temperature difference.</p></section>
-<section class="card" aria-live="polite"><h2>Moisture comparison</h2><div class="results">
-<div class="metric"><div class="name">Indoor absolute humidity</div><div class="value" id="ahi">—</div><div class="unit">g/m³</div></div>
-<div class="metric"><div class="name">Outdoor absolute humidity</div><div class="value" id="aho">—</div><div class="unit">g/m³</div></div>
-</div><div class="decision neutral" id="decision"><strong id="headline">Enter your readings</strong><p id="explanation">The comparison will appear here.</p></div></section>
-<section class="card" aria-live="polite"><h2>Predicted conditions during ventilation</h2><table><thead><tr><th>Ventilation time</th><th>Predicted temp.</th><th>Predicted RH</th><th>AH</th></tr></thead><tbody id="forecast"></tbody></table>
-<p class="note">Model assumes well-mixed air, a constant air-change rate, and temperature and moisture moving exponentially toward outdoor conditions. It does not account for heating, thermal mass of walls/furnishings, solar gain, moisture released by surfaces, or changing airflow. Temperature prediction is particularly simplified; use as a guide, not a guarantee.</p></section>
-<section class="card"><h2>How to use the result</h2><p class="note"><b>Lower outdoor absolute humidity:</b> ventilation will generally dry the air. Consider the predicted RH and temperature together when deciding how long to ventilate.</p><p class="note"><b>Higher outdoor absolute humidity:</b> ventilation may add moisture. Continue necessary fresh-air ventilation regardless.</p><p class="note">Calculations run on this device. No readings are uploaded or stored.</p></section>
-<footer>Ventilation Advisor</footer>
+
+<header class="hero">
+  <div class="kicker">Indoor air · quick planner</div>
+  <h1>Air Reset</h1>
+  <p>
+    Estimate how your room cools and dries during
+    cross-ventilation. Forecasts are calibrated to your previous test.
+  </p>
+</header>
+
+<section class="card">
+  <h2>Current air readings</h2>
+
+  <div class="grid">
+    <div>
+      <label for="ti">Inside temperature</label>
+      <input id="ti" type="number" step="0.1"
+             inputmode="decimal" value="18.8">
+    </div>
+
+    <div>
+      <label for="rhi">Inside RH</label>
+      <input id="rhi" type="number" min="0" max="100"
+             step="1" inputmode="decimal" value="70">
+    </div>
+
+    <div>
+      <label for="to">Outside temperature</label>
+      <input id="to" type="number" step="0.1"
+             inputmode="decimal" value="11">
+    </div>
+
+    <div>
+      <label for="rho">Outside RH</label>
+      <input id="rho" type="number" min="0" max="100"
+             step="1" inputmode="decimal" value="80">
+    </div>
+  </div>
+
+  <div class="achbox">
+    <div class="achhead">
+      <span>Ventilation strength</span>
+      <span class="achval" id="achValue">0.67 ACH</span>
+    </div>
+
+    <input id="ach" type="range"
+           min="0.1" max="3" step="0.05" value="0.67"
+           aria-label="Ventilation air changes per hour">
+
+    <div class="rangeends">
+      <span>0.1 · slow</span>
+      <span>3.0 · strong</span>
+    </div>
+
+    <div class="small" id="achHint">
+      Starting estimate based on your previous test.
+    </div>
+  </div>
+
+  <div class="seg">
+    <button id="calibrate" type="button">
+      Use my test calibration
+    </button>
+    <button id="reset" type="button">
+      Reset inputs
+    </button>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Moisture at a glance</h2>
+
+  <div class="compare">
+    <div class="tile">
+      <div class="label">Inside absolute humidity</div>
+      <div class="big" id="ahi">—</div>
+      <div class="unit">g/m³</div>
+    </div>
+
+    <div class="tile blue">
+      <div class="label">Outside absolute humidity</div>
+      <div class="big" id="aho">—</div>
+      <div class="unit">g/m³</div>
+    </div>
+  </div>
+
+  <div class="status" id="status">
+    <strong id="statusTitle">—</strong>
+    <p id="statusText">—</p>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Forecast while ventilating</h2>
+
+  <div class="forecast" id="forecast"></div>
+
+  <div class="recommend" id="recommend">
+    <div class="label">Suggested starting point</div>
+    <div class="main" id="recMain">—</div>
+    <p id="recText">—</p>
+  </div>
+
+  <p class="small" style="margin-top:12px">
+    Predictions use separate calibrated decay rates for temperature
+    and moisture, with a simplified model of cooling and moisture
+    exchange. Indoor RH is calculated from forecast temperature
+    and absolute humidity.
+  </p>
+</section>
+
+<section class="card">
+  <details>
+    <summary>Calibration &amp; ACH guide</summary>
+
+    <p class="small">Your recorded test:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Measurement</th>
+          <th>Before</th>
+          <th>After 50 min</th>
+          <th>30 min later</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Temperature</td>
+          <td>18.8°C</td>
+          <td>18.3°C</td>
+          <td>18.4°C</td>
+        </tr>
+        <tr>
+          <td>RH</td>
+          <td>70%</td>
+          <td>63%</td>
+          <td>64%</td>
+        </tr>
+        <tr>
+          <td>Absolute humidity</td>
+          <td>11.26</td>
+          <td>9.84</td>
+          <td>10.02 g/m³</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="small">
+      The previous test implied an approximate moisture-exchange
+      ACH of 0.67, but moisture buffering and measurement
+      uncertainty can affect it. The temperature fit is weakly
+      constrained because only a small air-temperature change
+      was measured. The model assumes a fraction of the
+      indoor-to-outdoor temperature difference decays with time.
+      Heating and the thermal mass of surfaces are not modelled.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ventilation scenario</th>
+          <th>Illustrative ACH</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Very gentle / weak airflow</td><td>0.2–0.4</td></tr>
+        <tr><td>Gentle cross-ventilation</td><td>0.4–0.8</td></tr>
+        <tr><td>Moderate cross-ventilation</td><td>0.8–1.5</td></tr>
+        <tr><td>Strong airflow</td><td>1.5–3+</td></tr>
+        <tr><td>Your prior estimate</td><td>~0.67</td></tr>
+      </tbody>
+    </table>
+
+    <p class="small">
+      Ranges are illustrative, not measured. Actual ACH varies
+      with wind, openings, room layout and indoor/outdoor
+      temperature difference.
+    </p>
+  </details>
+</section>
+
+<div class="foot">
+  Estimates only. Keep necessary fresh-air ventilation in mind;
+  the best moisture result is not the only ventilation goal.
+</div>
+
 </main>
+
 <script>
 (() => {
- const ids=["ti","rhi","to","rho","ach"], el=id=>document.getElementById(id);
- const es=t=>6.112*Math.exp((17.67*t)/(t+243.5));
- const ah=(t,rh)=>216.7*(rh/100)*es(t)/(t+273.15);
- const rhFromAh=(t,a)=>100*(a*(t+273.15)/216.7)/es(t);
- function calculate(){
-   const [ti,rhi,to,rho,achRate]=ids.map(id=>Number(el(id).value));
-   el("achValue").textContent=achRate.toFixed(2);
-   const valid=["ti","rhi","to","rho","ach"].every(id=>el(id).value.trim()!=="")&&[ti,rhi,to,rho,achRate].every(Number.isFinite)&&ti>-243.5&&to>-243.5&&rhi>=0&&rhi<=100&&rho>=0&&rho<=100&&achRate>0;
-   if(!valid){el("ahi").textContent="—";el("aho").textContent="—";el("headline").textContent="Check your measurements";el("explanation").textContent="Enter valid temperatures, RH values (0–100%) and an ACH greater than zero.";el("decision").className="decision neutral";el("forecast").innerHTML="";return;}
-   const indoorAH=ah(ti,rhi),outdoorAH=ah(to,rho);el("ahi").textContent=indoorAH.toFixed(2);el("aho").textContent=outdoorAH.toFixed(2);
-   const diff=outdoorAH-indoorAH;
-   if(diff < -0.15){el("decision").className="decision good";el("headline").textContent="Outdoor air is drier";el("explanation").textContent=`Outdoor air has ${Math.abs(diff).toFixed(2)} g/m³ less moisture. Ventilation should generally reduce indoor moisture.`;}
-   else if(diff>0.15){el("decision").className="decision bad";el("headline").textContent="Outdoor air is wetter";el("explanation").textContent=`Outdoor air has ${diff.toFixed(2)} g/m³ more moisture. Ventilation may add moisture indoors.`;}
-   else{el("decision").className="decision neutral";el("headline").textContent="Moisture levels are similar";el("explanation").textContent="Ventilation is unlikely to change the moisture content much.";}
-   el("forecast").innerHTML=[30,60,90].map(m=>{const factor=Math.exp(-achRate*m/60);const pt=to+(ti-to)*factor;const pa=outdoorAH+(indoorAH-outdoorAH)*factor;const prh=Math.max(0,Math.min(100,rhFromAh(pt,pa)));return `<tr><td><strong>${m} min</strong></td><td>${pt.toFixed(1)} °C</td><td><strong>${prh.toFixed(0)}%</strong></td><td>${pa.toFixed(2)}</td></tr>`;}).join("");
- }
- ids.forEach(id=>el(id).addEventListener("input",calculate));
- el("clear").addEventListener("click",()=>{ids.forEach(id=>el(id).value="");calculate();});
- calculate();
+  const el = id => document.getElementById(id);
+  const ids = ["ti", "rhi", "to", "rho"];
+
+  // Saturation vapour pressure in hPa
+  const es = t => 6.112 * Math.exp(17.67 * t / (t + 243.5));
+
+  // Absolute humidity in g/m3
+  const ah = (t, rh) =>
+    216.7 * (rh / 100) * es(t) / (t + 273.15);
+
+  // Convert absolute humidity to RH at a given temperature
+  const rhFromAh = (t, a) =>
+    100 * a * (t + 273.15) / (216.7 * es(t));
+
+  // Calibration from previous experiment
+  const calACH = 0.67;
+
+  // Approximate thermal decay rate from observed small
+  // temperature change during the 50-minute test.
+  const baseTempRate = 0.08;
+
+  function update() {
+    const [ti, rhi, to, rho] = ids.map(id => Number(el(id).value));
+    const achRate = Number(el("ach").value);
+
+    el("achValue").textContent = achRate.toFixed(2) + " ACH";
+
+    el("achHint").textContent =
+      achRate <= .45
+        ? "Low airflow setting. Moisture removal may be slow."
+        : achRate <= 1.2
+        ? "Moderate airflow setting."
+        : "High airflow setting. Actual airflow depends on wind and openings.";
+
+    const valid =
+      ids.every(id => el(id).value.trim() !== "") &&
+      [ti, rhi, to, rho, achRate].every(Number.isFinite) &&
+      ti > -243.5 && to > -243.5 &&
+      rhi >= 0 && rhi <= 100 &&
+      rho >= 0 && rho <= 100;
+
+    if (!valid) {
+      el("ahi").textContent = "—";
+      el("aho").textContent = "—";
+      el("forecast").innerHTML = "";
+      return;
+    }
+
+    const ai = ah(ti, rhi);
+    const ao = ah(to, rho);
+
+    el("ahi").textContent = ai.toFixed(2);
+    el("aho").textContent = ao.toFixed(2);
+
+    const d = ao - ai;
+
+    if (d < -.15) {
+      el("status").className = "status";
+      el("statusTitle").textContent = "Outside air is drier";
+      el("statusText").textContent =
+        `Outdoor absolute humidity is ${Math.abs(d).toFixed(2)} g/m³ lower. Ventilation should reduce airborne moisture.`;
+    } else if (d > .15) {
+      el("status").className = "status warn";
+      el("statusTitle").textContent = "Outside air is wetter";
+      el("statusText").textContent =
+        `Outdoor absolute humidity is ${d.toFixed(2)} g/m³ higher. Ventilation may increase indoor moisture.`;
+    } else {
+      el("status").className = "status";
+      el("statusTitle").textContent = "Moisture levels are similar";
+      el("statusText").textContent =
+        "Ventilation may not change indoor moisture content significantly.";
+    }
+
+    // Moisture exchange scales with ACH.
+    const moistureRate = achRate;
+
+    // Temperature responds more slowly than air exchange because
+    // walls, furniture, heating and other factors affect temperature.
+    const tempRate = baseTempRate * (achRate / calACH);
+
+    const times = [30, 60, 90];
+    const forecast = [];
+
+    for (const mins of times) {
+      const h = mins / 60;
+
+      const fM = Math.exp(-moistureRate * h);
+      const fT = Math.exp(-tempRate * h);
+
+      const pt = to + (ti - to) * fT;
+      const pa = ao + (ai - ao) * fM;
+
+      const prh = Math.max(
+        0,
+        Math.min(100, rhFromAh(pt, pa))
+      );
+
+      forecast.push({ mins, pt, pa, prh });
+    }
+
+    el("forecast").innerHTML = forecast.map(x => `
+      <div class="forecastrow">
+        <div class="time">
+          ${x.mins}<br>
+          <span class="caption">min</span>
+        </div>
+
+        <div>
+          <div class="caption">Temperature</div>
+          <div class="val">${x.pt.toFixed(1)}<small> °C</small></div>
+        </div>
+
+        <div>
+          <div class="caption">Predicted RH</div>
+          <div class="val">${x.prh.toFixed(0)}<small> %</small></div>
+          <div class="caption">${x.pa.toFixed(2)} g/m³ AH</div>
+        </div>
+      </div>
+    `).join("");
+
+    // Suggest the first forecast point where AH has dropped
+    // by at least 0.8 g/m3 from the starting value.
+    const best = forecast.find(x => x.pa <= ai - 0.8)
+      || forecast[forecast.length - 1];
+
+    el("recMain").textContent = `Try ${best.mins} minutes`;
+
+    if (d >= -.15) {
+      el("recText").textContent =
+        "Outdoor air is not notably drier, so these drying-time suggestions may not help. Ventilate for fresh air as needed.";
+    } else {
+      el("recText").textContent =
+        `At the current ACH setting, this forecast reaches about ${best.pa.toFixed(2)} g/m³ absolute humidity (${best.prh.toFixed(0)}% RH). Recheck your sensors and adjust the duration if conditions differ.`;
+    }
+  }
+
+  ids.forEach(id => el(id).addEventListener("input", update));
+  el("ach").addEventListener("input", update);
+
+  el("reset").addEventListener("click", () => {
+    el("ti").value = 18.8;
+    el("rhi").value = 70;
+    el("to").value = 11;
+    el("rho").value = 80;
+    el("ach").value = .67;
+    update();
+  });
+
+  el("calibrate").addEventListener("click", () => {
+    el("ti").value = 18.8;
+    el("rhi").value = 70;
+    el("to").value = 11;
+    el("rho").value = 80;
+    el("ach").value = .67;
+    update();
+  });
+
+  update();
 })();
-</script></body></html>
+</script>
+</body>
+</html>
